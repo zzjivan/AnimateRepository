@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animate.zero.com.animaterepository.heart_fly_up.HeartFlyUpLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:id="@+id/bt_start"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start_animate"/>
+
+    <ImageView
+        android:id="@+id/iv_heart"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/heart_red"/>
+
+</animate.zero.com.animaterepository.heart_fly_up.HeartFlyUpLayout>
