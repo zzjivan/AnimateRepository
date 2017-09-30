@@ -1,22 +1,21 @@
 package animate.zero.com.animaterepository.heart_fly_up;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.animation.TypeEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.PointF;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
-import android.view.animation.LinearInterpolator;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import java.util.Random;
 
+import animate.zero.com.animaterepository.Evalulators.ThreeStepBesselEvalulator;
 import animate.zero.com.animaterepository.R;
 import animate.zero.com.animaterepository.Utils.Util;
 
@@ -24,7 +23,7 @@ import animate.zero.com.animaterepository.Utils.Util;
  * Created by zzj on 17-9-29.
  */
 
-public class HeartFlyUpLayout extends RelativeLayout {
+public class HeartFlyUpLayout extends RelativeLayout{
     Button bt_start;
     ImageView heart;
 
@@ -39,8 +38,6 @@ public class HeartFlyUpLayout extends RelativeLayout {
 
     PointF start_point = new PointF();
     PointF end_point = new PointF();
-    PointF controll_point1 = new PointF(300, 300);
-    PointF controll_point2 = new PointF(350, 780);
 
     {
         layoutParams = new LayoutParams((int)Util.dpToPixel(48), (int)Util.dpToPixel(48));
@@ -77,8 +74,12 @@ public class HeartFlyUpLayout extends RelativeLayout {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         //初始化气泡的起点，终点坐标
-        start_point.set(getWidth()/2, getHeight() - heart.getHeight()/2);
-        end_point.set(getWidth()/2, 0);
+        //气泡大小48dp
+        //起点的位置是确定的。
+        //终点的y是确定的，x取 24dp 到 getWidth()-24dp范围
+        start_point.set(getWidth()/2 - Util.dpToPixel(24), getHeight() - heart.getHeight());
+        end_point.set(random.nextFloat() * (getWidth() - Util.dpToPixel(48)) + Util.dpToPixel(24)
+                , 0);
     }
 
     private void addHeart() {
@@ -94,19 +95,41 @@ public class HeartFlyUpLayout extends RelativeLayout {
 
         //animatorSet.setDuration(500);
         animatorSet.playTogether(alpha,scaleX,scaleY);
-
-        ValueAnimator move = ValueAnimator.ofObject(new BesselEvalulator(controll_point1, controll_point2),
-                start_point, end_point);
+        ValueAnimator move = ValueAnimator.ofObject(new ThreeStepBesselEvalulator(getControllPoint(1), getControllPoint(2)),
+                new PointF(start_point.x, start_point.y), new PointF(end_point.x, end_point.y));
         move.setTarget(imageView);
         move.setDuration(3000);
         move.addUpdateListener(new BesselListener(imageView));
 
+        //动画合集，都是由AnimatorSet来播放，添加一个listener，以便在动画结束后回收ImageView
         AnimatorSet finalSet = new AnimatorSet();
-        finalSet.playSequentially(animatorSet);
         finalSet.playSequentially(animatorSet, move);
-        finalSet.setTarget(imageView);
-        finalSet.setInterpolator(new LinearInterpolator());
+        finalSet.addListener(new AnimatEndListener(imageView));
         finalSet.start();
+    }
+
+    private PointF getControllPoint(int index) {
+        PointF ret = new PointF();
+        ret.x = random.nextInt(getWidth()-(int)Util.dpToPixel(48))+Util.dpToPixel(24);
+        if(index == 1)
+            ret.y = random.nextInt(getHeight()/2-(int)Util.dpToPixel(24))+getHeight()/2;
+        else
+            ret.y = random.nextInt(getHeight()/2-(int)Util.dpToPixel(24))+Util.dpToPixel(24);
+        return ret;
+    }
+
+    class AnimatEndListener extends AnimatorListenerAdapter {
+        private View target;
+
+        AnimatEndListener(View view) {
+            this.target = view;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            super.onAnimationEnd(animation);
+            removeView(target);
+        }
     }
 
     class BesselListener implements ValueAnimator.AnimatorUpdateListener {
@@ -121,24 +144,6 @@ public class HeartFlyUpLayout extends RelativeLayout {
             PointF value = (PointF) valueAnimator.getAnimatedValue();
             target.setX(value.x);
             target.setY(value.y);
-        }
-    }
-
-    class BesselEvalulator implements TypeEvaluator<PointF> {
-        //控制点
-        PointF p1;
-        PointF p2;
-
-        BesselEvalulator(PointF p1, PointF p2) {
-            this.p1 = p1;
-            this.p2 = p2;
-        }
-
-        @Override
-        public PointF evaluate(float fraction, PointF start, PointF end) {
-            PointF ret = new PointF(start.x + (end.x - start.x) * fraction,
-                    start.y + (end.y - start.y) * fraction);
-            return ret;
         }
     }
 
