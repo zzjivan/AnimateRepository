@@ -39,8 +39,11 @@ public class HeartFlyUpLayout extends RelativeLayout{
     PointF start_point = new PointF();
     PointF end_point = new PointF();
 
+    final int heart_img_size;
+
     {
-        layoutParams = new LayoutParams((int)Util.dpToPixel(48), (int)Util.dpToPixel(48));
+        heart_img_size = getResources().getDimensionPixelSize(R.dimen.heart_img_size);
+        layoutParams = new LayoutParams(heart_img_size, heart_img_size);
         layoutParams.addRule(CENTER_HORIZONTAL, TRUE);
         layoutParams.addRule(ALIGN_PARENT_BOTTOM, TRUE);
     }
@@ -77,9 +80,8 @@ public class HeartFlyUpLayout extends RelativeLayout{
         //气泡大小48dp
         //起点的位置是确定的。
         //终点的y是确定的，x取 24dp 到 getWidth()-24dp范围
-        start_point.set(getWidth()/2 - Util.dpToPixel(24), getHeight() - heart.getHeight());
-        end_point.set(random.nextFloat() * (getWidth() - Util.dpToPixel(48)) + Util.dpToPixel(24)
-                , 0);
+        start_point.set(getWidth()/2 - heart_img_size/2, getHeight() - heart.getHeight());
+        end_point.set(random.nextFloat() * (getWidth() - heart_img_size) + heart_img_size/2, 0);
     }
 
     private void addHeart() {
@@ -110,11 +112,11 @@ public class HeartFlyUpLayout extends RelativeLayout{
 
     private PointF getControllPoint(int index) {
         PointF ret = new PointF();
-        ret.x = random.nextInt(getWidth()-(int)Util.dpToPixel(48))+Util.dpToPixel(24);
+        ret.x = random.nextInt(getWidth()-heart_img_size)+heart_img_size/2;
         if(index == 1)
-            ret.y = random.nextInt(getHeight()/2-(int)Util.dpToPixel(24))+getHeight()/2;
+            ret.y = random.nextInt(getHeight()/2-heart_img_size/2)+getHeight()/2;
         else
-            ret.y = random.nextInt(getHeight()/2-(int)Util.dpToPixel(24))+Util.dpToPixel(24);
+            ret.y = random.nextInt(getHeight()/2-heart_img_size/2)+heart_img_size/2;
         return ret;
     }
 

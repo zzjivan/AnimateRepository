@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CircleWaveView">
+        <attr name="waterColor" format="color"/>
+        <attr name="waterHeight" format="dimension|reference"/>
+        <attr name="waveSwing" format="float"/>
+        <attr name="circleRadius" format="dimension|reference"/>
+    </declare-styleable>
+</resources>

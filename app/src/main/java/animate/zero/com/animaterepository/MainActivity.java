@@ -5,7 +5,6 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -21,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     {
         //每次新加入一个页面，在这里加入pages中就好了。
         pages.add(new PageModel(R.layout.heart_fly_up, R.string.heart_fly_up));
+        pages.add(new PageModel(R.layout.circle_wave, R.string.circle_wave));
     }
 
     @Override
