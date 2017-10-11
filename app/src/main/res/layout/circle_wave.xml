@@ -4,6 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <Button
+        android:id="@+id/bt_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:text="@string/start_animate"/>
+
     <animate.zero.com.animaterepository.circle_wave.CircleWaveView
         android:id="@+id/wave_view"
         android:layout_width="200dp"

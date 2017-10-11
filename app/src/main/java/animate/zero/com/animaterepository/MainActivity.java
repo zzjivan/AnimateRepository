@@ -21,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         //每次新加入一个页面，在这里加入pages中就好了。
         pages.add(new PageModel(R.layout.heart_fly_up, R.string.heart_fly_up));
         pages.add(new PageModel(R.layout.circle_wave, R.string.circle_wave));
+        pages.add(new PageModel(R.layout.turntable, R.string.turntable));
     }
 
     @Override

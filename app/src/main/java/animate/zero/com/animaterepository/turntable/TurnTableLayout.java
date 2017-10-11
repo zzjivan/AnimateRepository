@@ -1,9 +1,8 @@
-package animate.zero.com.animaterepository.circle_wave;
+package animate.zero.com.animaterepository.turntable;
 
 import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 import android.widget.Button;
@@ -11,27 +10,25 @@ import android.widget.RelativeLayout;
 
 import animate.zero.com.animaterepository.R;
 
-
 /**
- * Created by zzj on 17-10-9.
+ * Created by zzj on 17-10-10.
  */
 
-public class WaveViewLayout extends RelativeLayout {
-
+public class TurnTableLayout extends RelativeLayout {
     private Button bt_start;
-    private CircleWaveView circleWaveView;
+    private TurnTableView turnTableView;
 
     private ObjectAnimator objectAnimator1;
 
-    public WaveViewLayout(Context context) {
+    public TurnTableLayout(Context context) {
         super(context);
     }
 
-    public WaveViewLayout(Context context, AttributeSet attrs) {
+    public TurnTableLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public WaveViewLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public TurnTableLayout(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
@@ -51,10 +48,11 @@ public class WaveViewLayout extends RelativeLayout {
                 }
             }
         });
-        circleWaveView = findViewById(R.id.wave_view);
-        objectAnimator1 = ObjectAnimator.ofFloat(circleWaveView, "defaultAnchor1", 0, 360);
+        turnTableView = findViewById(R.id.turntable);
+
+        objectAnimator1 = ObjectAnimator.ofFloat(turnTableView, "defaultAnchor", 0, 360);
         objectAnimator1.setInterpolator(new LinearInterpolator());
-        objectAnimator1.setDuration(1000);
+        objectAnimator1.setDuration(3000);
         objectAnimator1.setRepeatCount(-1);
     }
 }
