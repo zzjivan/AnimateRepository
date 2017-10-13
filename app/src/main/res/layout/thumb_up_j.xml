@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJIcon
+        android:id="@+id/icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_messages_like_unselected"/>
+
+    <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJText
+        android:id="@+id/thumb_num"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/icon"/>
+
+</animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJLayout>
