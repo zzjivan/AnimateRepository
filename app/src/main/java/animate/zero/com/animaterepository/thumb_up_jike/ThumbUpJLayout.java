@@ -2,6 +2,7 @@ package animate.zero.com.animaterepository.thumb_up_jike;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.animation.PropertyValuesHolder;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -20,6 +21,7 @@ public class ThumbUpJLayout extends RelativeLayout {
     private ThumbUpJText text;
 
     private boolean selected = false;
+    private int count = 1699;
 
     public ThumbUpJLayout(Context context) {
         super(context);
@@ -38,19 +40,41 @@ public class ThumbUpJLayout extends RelativeLayout {
         super.onAttachedToWindow();
         icon = findViewById(R.id.icon);
         text = findViewById(R.id.thumb_num);
+        text.setText(count);
 
         setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                text.operate(!selected);
                 if (!selected) {
                     //点击时候，扩张的波纹效果。
                     //波纹的透明度变化和半径的变化是有关系的，直接计算（在ThumbUpJIcon中），就不用另外的动画了。
                     ObjectAnimator circleRadius = ObjectAnimator.ofFloat(icon, "shiningCircleRadius", 0,
                             icon.getShiningCircleMaxRadius());
-                    circleRadius.setDuration(300);
-                    circleRadius.start();
+//                    circleRadius.setDuration(300);
+//                    circleRadius.start();
+
+                    PropertyValuesHolder offsetY = PropertyValuesHolder.ofFloat("offsetY", 0, -text.getFontSpacing());
+                    PropertyValuesHolder textAlpha = PropertyValuesHolder.ofFloat("textAlpha", 0, 255);
+                    ObjectAnimator textTranslate =  ObjectAnimator.ofPropertyValuesHolder(text, offsetY, textAlpha);
+
+                    AnimatorSet set = new AnimatorSet();
+                    set.playTogether(circleRadius, textTranslate);
+                    set.setDuration(300);
+                    set.start();
+
+                    //count ++;
                 } else {
                     icon.setShiningCircleRadius(0);
+
+                    PropertyValuesHolder offsetY = PropertyValuesHolder.ofFloat("offsetY", -text.getFontSpacing(), 0);
+                    PropertyValuesHolder textAlpha = PropertyValuesHolder.ofFloat("textAlpha", 255, 0);
+                    ObjectAnimator textTranslate =  ObjectAnimator.ofPropertyValuesHolder(text, offsetY, textAlpha);
+                    textTranslate.setDuration(300);
+                    textTranslate.start();
+
+                    //count --;
                 }
                 selected = !selected;
             }
