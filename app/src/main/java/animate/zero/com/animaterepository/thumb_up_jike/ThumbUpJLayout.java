@@ -7,6 +7,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.LinearInterpolator;
 import android.widget.RelativeLayout;
 
 import animate.zero.com.animaterepository.R;
@@ -36,6 +37,11 @@ public class ThumbUpJLayout extends RelativeLayout {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         icon = findViewById(R.id.icon);
@@ -52,8 +58,6 @@ public class ThumbUpJLayout extends RelativeLayout {
                     //波纹的透明度变化和半径的变化是有关系的，直接计算（在ThumbUpJIcon中），就不用另外的动画了。
                     ObjectAnimator circleRadius = ObjectAnimator.ofFloat(icon, "shiningCircleRadius", 0,
                             icon.getShiningCircleMaxRadius());
-//                    circleRadius.setDuration(300);
-//                    circleRadius.start();
 
                     PropertyValuesHolder offsetY = PropertyValuesHolder.ofFloat("offsetY", 0, -text.getFontSpacing());
                     PropertyValuesHolder textAlpha = PropertyValuesHolder.ofFloat("textAlpha", 0, 255);
@@ -63,8 +67,6 @@ public class ThumbUpJLayout extends RelativeLayout {
                     set.playTogether(circleRadius, textTranslate);
                     set.setDuration(300);
                     set.start();
-
-                    //count ++;
                 } else {
                     icon.setShiningCircleRadius(0);
 
@@ -73,8 +75,6 @@ public class ThumbUpJLayout extends RelativeLayout {
                     ObjectAnimator textTranslate =  ObjectAnimator.ofPropertyValuesHolder(text, offsetY, textAlpha);
                     textTranslate.setDuration(300);
                     textTranslate.start();
-
-                    //count --;
                 }
                 selected = !selected;
             }
@@ -98,6 +98,14 @@ public class ThumbUpJLayout extends RelativeLayout {
                         set.playTogether(objectAnimatorX, objectAnimatorY);
                         set.setDuration(100);
                         set.start();
+
+// 上面代码和下面代码效果不一样，下面代码会有x方向的闪动，不知道为何。
+//                        PropertyValuesHolder x = PropertyValuesHolder.ofFloat("scaleX", 0,8f, 1.0f);
+//                        PropertyValuesHolder y = PropertyValuesHolder.ofFloat("scaleY", 0.8f, 1.0f);
+//                        ObjectAnimator objectAnimator = ObjectAnimator.ofPropertyValuesHolder(icon ,x, y);
+//                        objectAnimator.setInterpolator(new LinearInterpolator());
+//                        objectAnimator.setDuration(100);
+//                        objectAnimator.start();
                 }
                 return false;
             }

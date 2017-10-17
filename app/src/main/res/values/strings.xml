@@ -6,4 +6,7 @@
     <string name="circle_wave">Circle wave view</string>
     <string name="turntable">Turntable view</string>
     <string name="thumb_up_j">即刻 Thumb up</string>
+
+    <string name="modify_thumbup_count">修改点赞数量</string>
+    <string name="enter">确定</string>
 </resources>

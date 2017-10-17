@@ -1,21 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJLayout
+<animate.zero.com.animaterepository.thumb_up_jike.OperateLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJIcon
-        android:id="@+id/icon"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_centerInParent="true"
-        android:src="@drawable/ic_messages_like_unselected"/>
-
-    <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJText
-        android:id="@+id/thumb_num"
+    <EditText
+        android:id="@+id/editor"
         android:layout_width="wrap_content"
-        android:layout_height="48dp"
-        android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/icon"/>
+        android:layout_height="wrap_content"
+        android:hint="@string/modify_thumbup_count"/>
 
-</animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJLayout>
+    <Button
+        android:id="@+id/editor_confirm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editor"
+        android:text="@string/enter"/>
+
+    <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJIcon
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_messages_like_unselected"/>
+
+        <animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJText
+            android:id="@+id/thumb_num"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/icon"/>
+    </animate.zero.com.animaterepository.thumb_up_jike.ThumbUpJLayout>
+
+</animate.zero.com.animaterepository.thumb_up_jike.OperateLayout>

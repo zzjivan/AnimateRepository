@@ -17,6 +17,9 @@ import animate.zero.com.animaterepository.R;
 
 public class ThumbUpJIcon extends View {
 
+    private int width;
+    private int height;
+
     private Paint paint;
     private Paint shiningCirclePaint;
 
@@ -44,6 +47,10 @@ public class ThumbUpJIcon extends View {
         shiningCirclePaint.setColor(getResources().getColor(R.color.thumbUp_J_orange));
         shiningCirclePaint.setStyle(Paint.Style.STROKE);
         shiningCirclePaint.setStrokeWidth(10);
+
+        //根据bitmap的尺寸来设置view大小，针对wrap_content
+        width = bitmapSelected.getWidth() + bitmapShining.getWidth();
+        height = bitmapSelected.getWidth() + bitmapShining.getWidth();
     }
 
     public ThumbUpJIcon(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -51,9 +58,18 @@ public class ThumbUpJIcon extends View {
     }
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        //TODO：Exactly size measure
+
+        //对wrap_content设置尺寸
+        setMeasuredDimension(width, height);
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        //alpha变化：1.0f -> 0f   255 -> 0
+        //alpha变化：255 -> 0
         shiningCirclePaint.setAlpha((int) (255 - shiningCircleRadius * 255 / getShiningCircleMaxRadius()));
         canvas.drawCircle(getWidth() / 2, getHeight() / 2, shiningCircleRadius, shiningCirclePaint);
 

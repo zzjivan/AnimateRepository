@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.Rect;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -14,6 +15,11 @@ import android.view.View;
  */
 
 public class ThumbUpJText extends View {
+
+    private int width;
+    private int height;
+
+    private int paddingStart = 0;
 
     private Paint fixedTextPaint;
     private Paint paintCount;
@@ -57,10 +63,20 @@ public class ThumbUpJText extends View {
         fixedTextPaint.setAntiAlias(true);
         fixedTextPaint.setTextSize(40);
         fixedTextPaint.setColor(Color.GRAY);
+
+        paddingStart = 0;
+        width = (int) paintCount.measureText(bigger) + paddingStart;
+        height = (int) paintCount.getFontSpacing() * 3;
     }
 
     public ThumbUpJText(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        setMeasuredDimension(width, height);
     }
 
     @Override
@@ -71,18 +87,24 @@ public class ThumbUpJText extends View {
         //getHeight()/2 + paint.measureText(String.valueOf(smaller))*2 + 2  下
 
         //固定的数字单独用一个paint来绘制
-        canvas.drawText(countArray, 0, countArray.length - animateByteCount, 0, getHeight()/2 + textHeight/2, fixedTextPaint);
+        canvas.drawText(countArray,
+                0,
+                countArray.length - animateByteCount,
+                paddingStart,
+                getHeight()/2 + textHeight/2,
+                fixedTextPaint);
 
         //通过offsetY属性和textAlpha属性，制作属性动画效果
         canvas.drawText(countArray,
                 countArray.length - animateByteCount,
-                animateByteCount, fixedTextWidth,
+                animateByteCount,
+                paddingStart + fixedTextWidth,
                 getHeight()/2 + textHeight/2 + offsetY,
                 paintCount);
         canvas.drawText(biggerArray,
                 biggerArray.length - animateByteCount - (is9Repeat ? 1 : 0), //若当前是99这样的数，需要多操作1位
                 animateByteCount + (is9Repeat ? 1 : 0),
-                fixedTextWidth,
+                paddingStart + fixedTextWidth,
                 getHeight()/2 + +textHeight/2 + paintCountPlusOne.getFontSpacing() + offsetY,
                 paintCountPlusOne);
     }
@@ -91,10 +113,15 @@ public class ThumbUpJText extends View {
         this.count = String.valueOf(count);
         bigger = String.valueOf(count + 1);
 
+        //setText后需要更新view的宽度
+        width = (int) paintCount.measureText(bigger) + paddingStart;
+
         countArray = this.count.toCharArray();
         biggerArray = bigger.toCharArray();
 
         is9Repeat = is9Repeat(this.count);
+        operate(false);
+        invalidate();
     }
 
 
@@ -132,7 +159,6 @@ public class ThumbUpJText extends View {
                 ret ++;
                 count /= 10;
             }
-
         } else {
             count ++;
             while (count % 10 == 0) {
