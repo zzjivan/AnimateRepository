@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         pages.add(new PageModel(R.layout.circle_wave, R.string.circle_wave));
         pages.add(new PageModel(R.layout.turntable, R.string.turntable));
         pages.add(new PageModel(R.layout.thumb_up_j, R.string.thumb_up_j));
+        pages.add(new PageModel(R.layout.circle_run_xiaomi, R.string.circle_run));
     }
 
     @Override
