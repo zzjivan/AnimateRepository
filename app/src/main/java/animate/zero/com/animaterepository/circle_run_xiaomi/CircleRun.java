@@ -1,6 +1,7 @@
 package animate.zero.com.animaterepository.circle_run_xiaomi;
 
 import android.animation.Animator;
+import android.animation.AnimatorSet;
 import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
@@ -37,7 +38,7 @@ public class CircleRun extends View {
     private final int offset = 8;
     private int circleRotateDegree = 0;
     Shader sweepGradientShader;
-    Shader radialGradientShader;
+    Shader sweepGradientShader1;
 
     //烟花相关
     private final int pointAreaDegree = 30;
@@ -47,6 +48,7 @@ public class CircleRun extends View {
     private float circleScale = 1.0f;
     private int targetDegree = 180;
     private boolean showData = false;
+    private int shadowRotateDegree = 0;
 
     private String kilometer = "0公里";
     private String kilocalorie = "0千卡";
@@ -86,9 +88,11 @@ public class CircleRun extends View {
 
         shadowPaint = new Paint();
         shadowPaint.setStyle(Paint.Style.STROKE);
-        shadowPaint.setColor(Color.parseColor("#33FFFFFF"));
+        shadowPaint.setStrokeCap(Paint.Cap.ROUND);
+        shadowPaint.setColor(Color.parseColor("#AAFFFFFF"));
         shadowPaint.setAntiAlias(true);
         shadowPaint.setStrokeWidth(40);
+        shadowPaint.setShadowLayer(30, 30, 0, Color.parseColor("#ffffff"));
     }
 
     public CircleRun(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -105,9 +109,10 @@ public class CircleRun extends View {
             sweepGradientShader = new SweepGradient(width/2, height/2,
                     Color.parseColor("#00FFFFFF"), Color.parseColor("#77FFFFFF"));
 
-        if(radialGradientShader == null)
-            radialGradientShader = new RadialGradient(width/2, height/2,
-                    1.35f*circleRadius, Color.parseColor("#99FFFFFF"), Color.parseColor("#99FFFFFF"), Shader.TileMode.CLAMP);
+        if(sweepGradientShader1 == null)
+            sweepGradientShader1 = new SweepGradient(width/2, height/2,
+                    new int[] {Color.parseColor("#FFFFFF"), Color.parseColor("#00FFFFFF"), Color.parseColor("#00FFFFFF"), Color.parseColor("#00FFFFFF"), Color.parseColor("#FFFFFF")},
+                    new float[] {0, 0.25f, 0.5f, 0.75f, 1.0f});
     }
 
     @Override
@@ -156,10 +161,17 @@ public class CircleRun extends View {
                         height / 2 + circleRadius * (float) Math.sin(targetDegree * Math.PI / 180),
                         pointPaint);
 
+                //阴影环绕的效果：SweepGradient + setShadowLayer解决的比较完美。
                 if(shadowPaint.getShader() == null)
-                    shadowPaint.setShader(radialGradientShader);
-                shadowPaint.setShadowLayer(15, -10, 0, Color.parseColor("#33FFFFFF"));
-                canvas.drawCircle(width/2-15, height/2, 1.3f*circleRadius+5, shadowPaint);
+                    shadowPaint.setShader(sweepGradientShader1);
+                canvas.save();
+                canvas.rotate(shadowRotateDegree, width/2, height/2);
+                canvas.drawArc(width/2 - 1.3f*circleRadius,
+                        height/2 - 1.3f*circleRadius,
+                        width/2 + 1.3f*circleRadius,
+                        height/2 + 1.3f*circleRadius,
+                        -90, 180, false, shadowPaint);
+                canvas.restore();
             }
         }
 
@@ -181,6 +193,11 @@ public class CircleRun extends View {
 
     public void setCircleScale(float scale) {
         circleScale = scale;
+        invalidate();
+    }
+
+    public void setShadowRotateDegree(int degree) {
+        shadowRotateDegree = degree;
         invalidate();
     }
 
@@ -216,10 +233,18 @@ public class CircleRun extends View {
         Keyframe keyframe2 = Keyframe.ofFloat(0.5f, 1.6f);
         Keyframe keyframe3 = Keyframe.ofFloat(1.0f, 1.3f);
         PropertyValuesHolder keyFrame = PropertyValuesHolder.ofKeyframe("circleScale", keyframe1,keyframe2,keyframe3);
-        ObjectAnimator objectAnimator = ObjectAnimator.ofPropertyValuesHolder(this, keyFrame);
-        objectAnimator.setDuration(300);
-        objectAnimator.start();
-        objectAnimator.addListener(new Animator.AnimatorListener() {
+        ObjectAnimator circleScale = ObjectAnimator.ofPropertyValuesHolder(this, keyFrame);
+        circleScale.setDuration(300);
+        ObjectAnimator shadowRun = ObjectAnimator.ofInt(this, "shadowRotateDegree", 0, 360);
+        shadowRun.setDuration(5000);
+        shadowRun.setInterpolator(new LinearInterpolator());
+
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playSequentially(circleScale);
+        animatorSet.play(shadowRun).after(circleScale);
+        animatorSet.start();
+
+        circleScale.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animator) {
 
