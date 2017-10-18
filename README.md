@@ -37,7 +37,7 @@ icon部分：好像没什么说的，绘制bitmap。为了后续动画效果，�
 text部分：当设置了点赞数count后，可以立即计算出需要动画处理的位数。整个text需要drawText三次：绘制不动的部分；绘制点赞前数字的动画<br>
 部分；绘制点赞后数字的动画部分； 上下移动的效果通过“offsetY”属性来控制,消失出现通过“textAlpha”属性控制。<br>
 
-动画5：仿小米运动设备连接动画<br>
+动画5：仿小米运动设备连接动画（使用非文字的阴影效果，关闭了硬件加速，渣手机好卡。。）<br>
 ![Demo GIF](https://github.com/zzjivan/AnimateRepository/raw/master/gif/circleRun_xiaomi.gif "Demo")
 <br>
 连接过程中的圆环效果：画出多个圆环，使用扫描渐变效果；圆心错开一点点，同时带上阴影效果；<br>
