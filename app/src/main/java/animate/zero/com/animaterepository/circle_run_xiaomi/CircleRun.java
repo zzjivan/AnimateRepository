@@ -6,12 +6,16 @@ import android.animation.Keyframe;
 import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.PathEffect;
-import android.graphics.RadialGradient;
+import android.graphics.Rect;
 import android.graphics.Shader;
 import android.graphics.SweepGradient;
 import android.support.annotation.Nullable;
@@ -33,12 +37,15 @@ public class CircleRun extends View {
     private Paint pointPaint;
     private Paint shadowPaint;
 
+    private Bitmap background;
+
     //圆环相关
     private final int circleRadius = 300;
     private final int offset = 8;
     private int circleRotateDegree = 0;
     Shader sweepGradientShader;
     Shader sweepGradientShader1;
+    Shader shadowLinearGradient;
 
     //烟花相关
     private final int pointAreaDegree = 30;
@@ -46,12 +53,15 @@ public class CircleRun extends View {
 
     //连接完成后相关
     private float circleScale = 1.0f;
+    private float finalCircleScale = 1.3f;
     private int targetDegree = 180;
     private boolean showData = false;
     private int shadowRotateDegree = 0;
+    private final int shadowLayerCount = 5;
+    private final int shadowLayerOffset = 10;
 
-    private String kilometer = "0公里";
-    private String kilocalorie = "0千卡";
+    private String kilometer = "1.5公里";
+    private String kilocalorie = "34千卡";
     private final int paddingDelivery = 18;
 
     private ObjectAnimator circleRotate;
@@ -67,8 +77,10 @@ public class CircleRun extends View {
     public CircleRun(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 
+        background = BitmapFactory.decodeResource(getResources(), R.drawable.bg_step_law);
+
         //关闭硬件加速
-        setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        //setLayerType(View.LAYER_TYPE_SOFTWARE, null);
 
         circlePaint = new Paint();
         circlePaint.setStyle(Paint.Style.STROKE);
@@ -88,11 +100,15 @@ public class CircleRun extends View {
 
         shadowPaint = new Paint();
         shadowPaint.setStyle(Paint.Style.STROKE);
-        shadowPaint.setStrokeCap(Paint.Cap.ROUND);
-        shadowPaint.setColor(Color.parseColor("#AAFFFFFF"));
-        shadowPaint.setAntiAlias(true);
         shadowPaint.setStrokeWidth(40);
-        shadowPaint.setShadowLayer(30, 30, 0, Color.parseColor("#ffffff"));
+        shadowPaint.setAntiAlias(true);
+        //shadowPaint.setStyle(Paint.Style.STROKE);
+        //shadowPaint.setStrokeCap(Paint.Cap.ROUND);
+        //shadowPaint.setColor(Color.parseColor("#AAFFFFFF"));
+        //shadowPaint.setAntiAlias(true);
+        //shadowPaint.setStrokeWidth(40);
+        //shadowPaint.setShadowLayer(30, 30, 0, Color.parseColor("#ffffff"));
+
     }
 
     public CircleRun(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
@@ -113,21 +129,31 @@ public class CircleRun extends View {
             sweepGradientShader1 = new SweepGradient(width/2, height/2,
                     new int[] {Color.parseColor("#FFFFFF"), Color.parseColor("#00FFFFFF"), Color.parseColor("#00FFFFFF"), Color.parseColor("#00FFFFFF"), Color.parseColor("#FFFFFF")},
                     new float[] {0, 0.25f, 0.5f, 0.75f, 1.0f});
+
+        if (shadowLinearGradient == null)
+            shadowLinearGradient = new LinearGradient(
+                    width/2, height/2,
+                    width/2 + finalCircleScale*circleRadius, height/2,
+                    Color.parseColor("#00000000"),
+                    Color.parseColor("#FFFFFF"),
+                    Shader.TileMode.CLAMP);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        canvas.drawColor(getResources().getColor(R.color.waterBlue));
+        Rect src = new Rect(0,0,background.getWidth(),background.getHeight());
+        Rect dist = new Rect(0,0,width,height);
+        canvas.drawBitmap(background, src, dist, new Paint());
 
-        if(connecting) {
+        if(connecting) {//连接中 动画
             if (circlePaint.getShader() != null)
                 circlePaint.setShader(sweepGradientShader);
             circlePaint.setShadowLayer(5, 0, 0, Color.parseColor("#33FFFFFF"));
             circlePaint.setPathEffect(null);
             circlePaint.setStrokeWidth(6);
             connectingAnimator(canvas);
-        } else {
+        } else {//接入后 动画
             circlePaint.setShadowLayer(0, 0, 0, Color.parseColor("#33FFFFFF"));
             circlePaint.setPathEffect(null);
             circlePaint.setShader(null);
@@ -137,6 +163,7 @@ public class CircleRun extends View {
 
 
             if (showData) {
+                //绘制虚线圈
                 PathEffect pathEffect = new DashPathEffect(new float[]{5, 5}, 0);
                 circlePaint.setShadowLayer(0, 0, 0, Color.parseColor("#33FFFFFF"));
                 circlePaint.setPathEffect(pathEffect);
@@ -145,6 +172,7 @@ public class CircleRun extends View {
                 circlePaint.setStrokeWidth(6);
                 canvas.drawCircle(width / 2, height / 2, circleRadius, circlePaint);
 
+                //绘制虚线上的 进度圈
                 circlePaint.setShadowLayer(0, 0, 0, Color.parseColor("#33FFFFFF"));
                 circlePaint.setPathEffect(null);
                 circlePaint.setColor(Color.parseColor("#FFFFFF"));
@@ -154,7 +182,6 @@ public class CircleRun extends View {
                         height / 2 + circleRadius,
                         -90, targetDegree + 90, false, circlePaint);
 
-
                 pointPaint.setAlpha(255);
                 pointPaint.setStrokeWidth(20);
                 canvas.drawPoint(width / 2 + circleRadius * (float) Math.cos(targetDegree * Math.PI / 180),
@@ -162,23 +189,39 @@ public class CircleRun extends View {
                         pointPaint);
 
                 //阴影环绕的效果：SweepGradient + setShadowLayer解决的比较完美。
-                if(shadowPaint.getShader() == null)
-                    shadowPaint.setShader(sweepGradientShader1);
+//                if(shadowPaint.getShader() == null)
+//                    shadowPaint.setShader(sweepGradientShader1);
+//                canvas.save();
+//                canvas.rotate(shadowRotateDegree, width/2, height/2);
+//                canvas.drawArc(width/2 - 1.3f*circleRadius,
+//                        height/2 - 1.3f*circleRadius,
+//                        width/2 + 1.3f*circleRadius,
+//                        height/2 + 1.3f*circleRadius,
+//                        -90, 180, false, shadowPaint);
+
+                //修改了阴影生成的方法，用画椭圆的方法来实现，更接近小米原生效果，而且不用关闭硬件加速。
                 canvas.save();
                 canvas.rotate(shadowRotateDegree, width/2, height/2);
-                canvas.drawArc(width/2 - 1.3f*circleRadius,
-                        height/2 - 1.3f*circleRadius,
-                        width/2 + 1.3f*circleRadius,
-                        height/2 + 1.3f*circleRadius,
-                        -90, 180, false, shadowPaint);
+                if(shadowPaint.getShader() == null)
+                    shadowPaint.setShader(shadowLinearGradient);
+                for(int i = 0; i < shadowLayerCount; i ++) {
+                    shadowPaint.setAlpha(0xff * (shadowLayerCount - i) / (shadowLayerCount * 3));
+                    canvas.drawOval(width/2 - finalCircleScale*circleRadius,
+                            height/2 - finalCircleScale*circleRadius,
+                            width/2 + finalCircleScale*circleRadius + i * shadowLayerOffset,
+                            height/2 + finalCircleScale*circleRadius,
+                            shadowPaint);
+                }
                 canvas.restore();
             }
         }
 
+        //绘制步数
         textPaint.setAlpha(255);
         textPaint.setTextSize(180);
         canvas.drawText("2274", width/2-textPaint.measureText("2274")/2, height/2+48, textPaint);
 
+        //绘制 公里 分割线 卡路里
         textPaint.setAlpha(155);
         textPaint.setTextSize(48);
         canvas.drawText(kilometer, width/2-textPaint.measureText(kilometer)-paddingDelivery, height/2+circleRadius/2, textPaint);
@@ -229,12 +272,13 @@ public class CircleRun extends View {
         connecting = false;
         circleRotate.cancel();
 
-        Keyframe keyframe1 = Keyframe.ofFloat(0, 1.2f);
-        Keyframe keyframe2 = Keyframe.ofFloat(0.5f, 1.6f);
-        Keyframe keyframe3 = Keyframe.ofFloat(1.0f, 1.3f);
-        PropertyValuesHolder keyFrame = PropertyValuesHolder.ofKeyframe("circleScale", keyframe1,keyframe2,keyframe3);
-        ObjectAnimator circleScale = ObjectAnimator.ofPropertyValuesHolder(this, keyFrame);
-        circleScale.setDuration(300);
+        Keyframe circleScaleKeyframe1 = Keyframe.ofFloat(0, 1.2f);
+        Keyframe circleScaleKeyframe2 = Keyframe.ofFloat(0.5f, 1.5f);
+        Keyframe circleScaleKeyframe3 = Keyframe.ofFloat(1.0f, finalCircleScale);
+        PropertyValuesHolder circleScaleKeyframe = PropertyValuesHolder.ofKeyframe("circleScale", circleScaleKeyframe1,circleScaleKeyframe2,circleScaleKeyframe3);
+
+        ObjectAnimator circleScale = ObjectAnimator.ofPropertyValuesHolder(this, circleScaleKeyframe);
+        circleScale.setDuration(500);
         ObjectAnimator shadowRun = ObjectAnimator.ofInt(this, "shadowRotateDegree", 0, 360);
         shadowRun.setDuration(5000);
         shadowRun.setInterpolator(new LinearInterpolator());
@@ -270,29 +314,9 @@ public class CircleRun extends View {
     private void connectingAnimator (Canvas canvas) {
         canvas.save();
         canvas.rotate(circleRotateDegree, width/2, height/2);
-
-        //TODO:画圈这里为了尽量看着和小米类似，写的很不优雅
-        //每画一个圈，旋转2度。
         circlePaint.setShader(sweepGradientShader);
-        canvas.drawCircle(width/2, height/2+offset/2, circleRadius+offset, circlePaint);
 
-        canvas.rotate(2, width/2, height/2);
-        canvas.drawCircle(width/2, height/2, circleRadius+offset/2, circlePaint);
-
-        canvas.rotate(2, width/2, height/2);
-        canvas.drawCircle(width/2, height/2, circleRadius, circlePaint);
-
-        canvas.rotate(2, width/2, height/2);
-        canvas.drawCircle(width/2-offset/2, height/2, circleRadius-offset/2, circlePaint);
-
-        canvas.rotate(2, width/2, height/2);
-        canvas.drawCircle(width/2-offset, height/2, circleRadius-offset, circlePaint);
-
-        canvas.rotate(2, width/2, height/2);
-        canvas.drawCircle(width/2-offset, height/2, circleRadius-offset/2*3, circlePaint);
-
-        canvas.drawCircle(width/2, height/2, circleRadius-offset*2, circlePaint);
-
+        Path path = new Path();
         //回退30度范围内，绘制小圆点。
         int pointRadius;
         pointPaint.setStrokeWidth(10);
@@ -300,16 +324,41 @@ public class CircleRun extends View {
             //越往后，圆点透明度越低
             pointPaint.setAlpha(255+240/pointAreaDegree*degree);
             //以最内侧圆圈的半径为基准，向两侧散列 小圆点。
+            //小圆点所处的圆半径 = 最内侧圆半径 + 正负2倍degree范围内的随机数。
             pointRadius = circleRadius-offset*2 + 2*(random.nextInt(-degree*2)+degree);
             canvas.drawPoint(width/2 + pointRadius * (float)Math.abs(Math.cos(degree*Math.PI/180)),
                     height/2 - pointRadius * (float)Math.abs(Math.sin(degree*Math.PI/180)),
                     pointPaint);
+
             //为了小圆点多一点，多画一次。
-            pointRadius = circleRadius-offset*2 + 3*(random.nextInt(-degree*2)+degree);
+            pointRadius = circleRadius-offset*2 + 2*(random.nextInt(-degree*2)+degree);
             canvas.drawPoint(width/2 + pointRadius * (float)Math.abs(Math.cos(degree*Math.PI/180)),
                     height/2 - pointRadius * (float)Math.abs(Math.sin(degree*Math.PI/180)),
                     pointPaint);
+
         }
+
+        //每画一个圈，旋转2度。
+        path.reset();
+        canvas.drawCircle(width/2, height/2, circleRadius-offset*2, circlePaint);
+
+        canvas.rotate(-2, width/2, height/2);
+        canvas.drawCircle(width/2-offset, height/2, circleRadius-offset*3/2, circlePaint);
+
+        canvas.rotate(-2, width/2, height/2);
+        canvas.drawCircle(width/2-offset, height/2, circleRadius-offset, circlePaint);
+
+        canvas.rotate(-2, width/2, height/2);
+        canvas.drawCircle(width/2-offset/2, height/2, circleRadius-offset/2, circlePaint);
+
+        canvas.rotate(-2, width/2, height/2);
+        canvas.drawCircle(width/2, height/2, circleRadius, circlePaint);
+
+        canvas.rotate(-2, width/2, height/2);
+        canvas.drawCircle(width/2, height/2, circleRadius+offset/2, circlePaint);
+
+        canvas.drawCircle(width/2, height/2+offset/2, circleRadius+offset, circlePaint);
+
         canvas.restore();
     }
 }

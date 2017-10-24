@@ -44,7 +44,7 @@ public class CircleRunLayout extends RelativeLayout {
             public void onClick(View view) {
                 circleRun.reset();
                 circleRun.startConnectingAnimation();
-                handler.postDelayed(delayAction, 5000);
+                handler.postDelayed(delayAction, 1000);
             }
         });
 
