@@ -105,18 +105,24 @@ public class CircleWaveView extends View implements SensorEventListener{
         float startY1 = getHeight()/2;
         float startY2 = getHeight()/2;
         for(int i = getWidth()/2-circleRadius; i <= getWidth()/2+circleRadius; i++) {
-            canvas.drawLine(i, startY1,
-                    i+1, getHeight(), wavePaint);
-            startY1 = startY1 + swing * (float)Math.sin((i+defaultAnchor1) * Math.PI / 180);
+//            canvas.drawLine(i, startY1,
+//                    i+1, getHeight(), wavePaint);
+//            startY1 = startY1 + swing * (float)Math.sin((i+defaultAnchor1) * Math.PI / 180);
+//
+//            canvas.drawLine(i, startY2,
+//                    i+1, getHeight(), wavePaint);
+//            startY2 = startY2 + swing * (float)Math.sin((waveInternal+i+defaultAnchor1) * Math.PI / 180);
 
-            canvas.drawLine(i, startY2,
-                    i+1, getHeight(), wavePaint);
-            startY2 = startY2 + swing * (float)Math.sin((waveInternal+i+defaultAnchor1) * Math.PI / 180);
+            //上面的代码应该是写错了，自己看不懂了（swing要设置为0.3）。。但意外的可以实现效果。。
+            canvas.drawLine(i, startY1, i, getHeight(), wavePaint);
+            startY1 = getHeight()/2 + swing *(float) Math.sin((i+defaultAnchor1) * Math.PI / 180);
+            canvas.drawLine(i, startY2, i, getHeight(), wavePaint);
+            startY2 = getHeight()/2 + swing * (float) Math.sin((i+defaultAnchor1+waveInternal) * Math.PI / 180);
         }
 
         shader = new BitmapShader(bitmap, Shader.TileMode.REPEAT, Shader.TileMode.CLAMP);
         mViewPaint.setShader(shader);
-        bitmap.recycle();
+        //bitmap.recycle();
     }
 
     public float getDefaultAnchor1() {

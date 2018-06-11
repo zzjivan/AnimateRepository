@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<animate.zero.com.animaterepository.circle_wave.WaveViewLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<animate.zero.com.animaterepository.circle_wave.WaveViewLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:wave="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -19,6 +20,6 @@
         android:layout_centerInParent="true"
         wave:waterColor="@color/colorAccent"
         wave:circleRadius="@dimen/wave_circle_radius"
-        wave:waveSwing="0.3" />
+        wave:waveSwing="20" />
 
 </animate.zero.com.animaterepository.circle_wave.WaveViewLayout>
